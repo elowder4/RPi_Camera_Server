@@ -3,6 +3,7 @@ from picamera2 import Picamera2
 from picamera2 import Preview
 import time
 import cv2
+import numpy as np
 
 app = Flask(__name__)
 
@@ -25,12 +26,18 @@ def generate_video():
         # Capture a frame from the camera
         frame = picam2.capture_array()
 
-        # Convert the frame to JPEG format using Picamera2's encoder
-        jpeg_frame = cv2.imencode('.jpeg', frame)
+        # Convert the frame to JPEG format using OpenCV
+        ret, jpeg_frame = cv2.imencode('.jpeg', frame)
+
+        if not ret:
+            continue  # Skip the frame if encoding failed
+
+        # Convert the numpy array to bytes
+        jpeg_frame_bytes = jpeg_frame.tobytes()
 
         # Yield the JPEG frame as part of the MJPEG stream
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame + b'\r\n\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame_bytes + b'\r\n\r\n')
 
 @app.route('/')
 def index():
