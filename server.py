@@ -2,7 +2,8 @@ import cv2
 import numpy
 from flask import Flask, render_template, Response, stream_with_context, Request
 
-video = cv2.VideoCapture(0)
+#video = cv2.VideoCapture(0)
+video = cv2.VideoCapture("v4l2src device=/dev/video0 ! videoconvert ! appsink", cv2.CAP_GSTREAMER)
 app = Flask(__name__)
 
 def video_stream():
