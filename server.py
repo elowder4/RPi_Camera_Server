@@ -1,29 +1,30 @@
 import time
 import io
-import picamera
+from picamera2 import Picamera2
 from flask import Flask, render_template, Response
 
 app = Flask(__name__)
 
-# Initialize the Pi Camera
-camera = picamera.PICamera()
+# Initialize the Picamera2 camera object
+picam2 = Picamera2()
+
+# Configure the camera (you can customize settings as needed)
+picam2.configure(picam2.create_still_configuration())
+
+# Start the camera
+picam2.start()
 
 def video_stream():
     # Create a memory buffer to store the image
-    stream = io.BytesIO()
-
     while True:
-        # Capture an image to the stream in JPEG format
-        camera.capture(stream, format='jpeg')
+        # Capture a still image (a frame) from the camera
+        frame = picam2.capture_array()
 
-        # Get the byte data from the buffer
-        frame = stream.getvalue()
+        # Convert the frame to a JPEG format
+        _, buffer = cv2.imencode('.jpeg', frame)
+        frame = buffer.tobytes()
 
-        # Reset the stream for the next frame
-        stream.seek(0)
-        stream.truncate()
-
-        # Yield the image in multipart format
+        # Yield the frame in multipart format
         yield (b'--frame\r\n' 
                b'Content-type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -37,5 +38,4 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    # Start Flask app on 192.168.1.96:5000
     app.run(host='192.168.1.96', port=5000, debug=True)
