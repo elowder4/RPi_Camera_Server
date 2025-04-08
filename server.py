@@ -18,7 +18,7 @@ def video_stream():
 @app.route('/siteTest')
 
 def siteTest():
-    return render_template('siteTest.html')
+    return render_template('index.html')
 
 @app.route('/video_feed')
 
