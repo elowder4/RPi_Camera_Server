@@ -1,15 +1,15 @@
-from picamera2 import Picamera2
+from picamera2 import Picamera2, Preview
 from flask import Flask, render_template, Response
 
 app = Flask(__name__)
 
-# Initialize picamera2
+# Initialize Picamera2
 picam2 = Picamera2()
 
-# Configure the camera (using the default preview configuration)
-picam2.configure(picam2.create_preview_configuration())
+# Configure the camera for video stream
+picam2.configure(picam2.create_video_configuration())
 
-# Start the camera (start capturing frames)
+# Start the camera
 picam2.start()
 
 def video_stream():
@@ -17,7 +17,7 @@ def video_stream():
         # Capture a frame from picamera2
         frame = picam2.capture_array()
 
-        # Convert the captured frame to JPEG (picamera2 supports this natively)
+        # Convert to JPEG (Picamera2 automatically encodes the frame)
         frame = picam2.encode_frame(frame, "jpeg")
 
         # Yield the frame in the correct multipart format for MJPEG streaming
