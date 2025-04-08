@@ -1,33 +1,32 @@
 from flask import Flask, Response
 from picamera2 import Picamera2
-import cv2
+import time
 
 app = Flask(__name__)
 
 # Initialize Picamera2
 picam2 = Picamera2()
 
-# Configure the camera for video capture
+# Configure the camera for video capture (you can change settings like resolution, etc.)
 config = picam2.create_video_configuration()
 picam2.configure(config)
 
-# Start the camera preview (preview is required to initialize the camera)
+# Start the camera preview (this is necessary to initialize the camera)
 picam2.start_preview()
 
-# Function to capture video frame by frame
+# Function to capture video frame by frame and generate the MJPEG stream
 def generate_video():
     while True:
-        # Capture the current frame from the camera
+        # Capture a frame from the camera
         frame = picam2.capture_array()
 
         # Convert the frame to JPEG format for streaming
-        ret, jpeg = cv2.imencode('.jpg', frame)
-        if not ret:
-            continue  # Skip the frame if it couldn't be encoded
+        # Picamera2 does not use OpenCV, so we use the built-in functions
+        jpeg_frame = picam2.encoder.encode(frame)
 
-        # Yield the frame as a part of the MJPEG stream
+        # Yield the JPEG frame as part of the MJPEG stream
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame + b'\r\n\r\n')
 
 @app.route('/')
 def index():
@@ -40,4 +39,4 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='192.168.1.96', port=5000, debug=False)
