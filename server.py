@@ -1,5 +1,6 @@
 from flask import Flask, Response
 from picamera2 import Picamera2
+from picamera2 import Preview
 import time
 
 app = Flask(__name__)
@@ -7,12 +8,15 @@ app = Flask(__name__)
 # Initialize Picamera2
 picam2 = Picamera2()
 
-# Configure the camera for video capture (you can change settings like resolution, etc.)
+# Configure the camera for video capture
 config = picam2.create_video_configuration()
 picam2.configure(config)
 
-# Start the camera preview (this is necessary to initialize the camera)
-picam2.start_preview()
+# Start the camera preview
+picam2.start_preview(Preview.NULL)  # No physical preview needed
+
+# Start the camera (you must start it before capturing frames)
+picam2.start()
 
 # Function to capture video frame by frame and generate the MJPEG stream
 def generate_video():
@@ -20,8 +24,7 @@ def generate_video():
         # Capture a frame from the camera
         frame = picam2.capture_array()
 
-        # Convert the frame to JPEG format for streaming
-        # Picamera2 does not use OpenCV, so we use the built-in functions
+        # Convert the frame to JPEG format using Picamera2's encoder
         jpeg_frame = picam2.encoder.encode(frame)
 
         # Yield the JPEG frame as part of the MJPEG stream
