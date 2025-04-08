@@ -2,6 +2,7 @@ from flask import Flask, Response
 from picamera2 import Picamera2
 from picamera2 import Preview
 import time
+import cv2
 
 app = Flask(__name__)
 
@@ -25,7 +26,7 @@ def generate_video():
         frame = picam2.capture_array()
 
         # Convert the frame to JPEG format using Picamera2's encoder
-        jpeg_frame = picam2.encoder.encode(frame)
+        jpeg_frame = cv2.imencode('.jpeg', frame)
 
         # Yield the JPEG frame as part of the MJPEG stream
         yield (b'--frame\r\n'
