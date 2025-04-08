@@ -1,31 +1,41 @@
-import cv2
-import numpy
-from flask import Flask, render_template, Response, stream_with_context, Request
+import time
+import io
+import picamera
+from flask import Flask, render_template, Response
 
-#video = cv2.VideoCapture(0)
-video = cv2.VideoCapture("v4l2src device=/dev/video0 ! videoconvert ! appsink", cv2.CAP_GSTREAMER)
 app = Flask(__name__)
 
+# Initialize the Pi Camera
+camera = picamera.PICamera()
+
 def video_stream():
-    while(True):
-        ret, frame = video.read()
-        if not ret:
-            print("Failed to get frame")
-            break
-        else:
-            print("Got frame")
-            ret, buffer = cv2.imencode('.jpeg',frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n' b'Content-type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    # Create a memory buffer to store the image
+    stream = io.BytesIO()
+
+    while True:
+        # Capture an image to the stream in JPEG format
+        camera.capture(stream, format='jpeg')
+
+        # Get the byte data from the buffer
+        frame = stream.getvalue()
+
+        # Reset the stream for the next frame
+        stream.seek(0)
+        stream.truncate()
+
+        # Yield the image in multipart format
+        yield (b'--frame\r\n' 
+               b'Content-type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route('/siteTest')
-
 def siteTest():
     return render_template('index.html')
 
 @app.route('/video_feed')
-
 def video_feed():
-    return Response(video_stream(), mimetype= 'multipart/x-mixed-replace; boundary=frame')
+    return Response(video_stream(), 
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-app.run(host ='192.168.1.96', port= '5000', debug=False)
+if __name__ == '__main__':
+    # Start Flask app on 192.168.1.96:5000
+    app.run(host='192.168.1.96', port=5000, debug=True)
