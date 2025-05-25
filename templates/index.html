@@ -1,27 +1,39 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <meta name = "viewport" content = "width = device-width, initial-scale=1">
+        <meta charset="UTF-8">
+        <title>Raspberry Pi Camera Feed</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
-            img{ display: block;
-                margin-left: auto;
-                margin-right: auto;
+            body {
+                background-color: #f8f9fa;
             }
-            canvas {
-            display: block;
-            margin: auto;
+            .camera-feed {
+                max-width: 100%;
+                height: auto;
+                border: 2px solid #dee2e6;
+                border-radius: 8px;
             }
-            h1, p {
-                text-align: center;
+            .data-section {
+                margin-top: 20px;
+            }
+            .data-item {
+            margin-bottom: 10px;
             }
         </style>
-        <title>Prusa MK3S Stream</title>
     </head>
-    
     <body>
-        <h1>Prusa MK3S Live</h1>
-        <p>Capture FPS: <span id="fps-capture">Loading...</span></p>
-        <p>Stream FPS: <span id="fps-stream">Loading...</span></p>
-        <canvas id="videoCanvas" width="640" height="480"></canvas>
+        <div class="container text-center mt-5">
+            <h1 class="mb-4">Prusa MK3S Live</h1>
+            <img src="/frame.jpg" class="camera-feed" alt="Live camera feed" />
+        
+            <div class="data-section mt-4">
+                <p class="fs-4 data-item" id="temperature">Temperature: <strong>Loading...</strong></p>
+                <p class="fs-4 data-item" id="humidity">Humidity: <strong>Loading...</strong></p>
+                <p class="fs-4 data-item" id="fps-stream">Stream FPS: <strong>Loading...</strong></p>
+                <p class="fs-4 data-item" id="fps-capture">Capture FPS: <strong>Loading...</strong></p>
+            </div>
+        </div>
     </body>
     
     <script>
@@ -44,8 +56,7 @@
                 fpsSamples.push(fps);
                 if (fpsSamples.length > 10) fpsSamples.shift();
 
-                const avgFps = fpsSamples.reduce((a, b) => a + b, 0) / fpsSamples.length;
-                document.getElementById('fps-stream').textContent = avgFps.toFixed(1);
+                var avgFps = fpsSamples.reduce((a, b) => a + b, 0) / fpsSamples.length;
 
                 // Fetch next frame
                 requestAnimationFrame(fetchAndDrawFrame);
@@ -59,16 +70,29 @@
             img.src = `/frame.jpg?t=${Date.now()}`; // prevent caching
         }
 
-        function updateCaptureFPS() {
+        function updateFPS() {
             fetch('/get_fps')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('fps-capture').textContent = data.toFixed(2);
+                    document.getElementById('fps-capture').textContent = data;
+                    document.getElementById('fps-stream').textContent = avgFps.toFixed(1);
                 })
                 .catch(err => console.warn("Capture FPS fetch error:", err));
         }
+        
+        function updateDHT11() {
+            fetch('/get_DHT11')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('temperature').textContent = data[0] + "°F";
+                    document.getElementById('humidity').textContent = data[1] + "%";
+                })
+                .catch(err => console.warn("Capture DHT11 fetch error:", err));
+        }
+        
 
-        setInterval(updateCaptureFPS, 1000);
+        setInterval(updateFPS, 500);
+        setInterval(updateDHT11, 500);
         updateCaptureFPS(); // Initial call
         fetchAndDrawFrame(); // Start video loop
     </script>
