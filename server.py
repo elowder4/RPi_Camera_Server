@@ -26,7 +26,6 @@ picam2.start_preview(Preview.NULL)  # No physical preview needed
 picam2.start()
 
 fps_time = []
-fps = 0
 
 # Function to capture video frame by frame and generate the MJPEG stream
 def generate_video():
@@ -45,11 +44,9 @@ def generate_video():
             fps_time.append(t0)
             if (len(fps_time)) > 1:
                 fps = 1000 / (fps_time[1] - fps_time[0])
+                print(fps)
             if len(fps_time) >= 2:
                 fps_time.pop(0)
-
-            print(fps)
-            
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame.tobytes() + b'\r\n\r\n')
