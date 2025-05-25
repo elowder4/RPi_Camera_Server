@@ -1,39 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Raspberry Pi Camera Feed</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            body {
-                background-color: #f8f9fa;
-            }
-            .camera-feed {
-                max-width: 100%;
-                height: auto;
-                border: 2px solid #dee2e6;
-                border-radius: 8px;
-            }
-            .data-section {
-                margin-top: 20px;
-            }
-            .data-item {
-            margin-bottom: 10px;
-            }
-        </style>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prusa MK3S Live</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .camera-feed {
+            width: 100%;
+            max-height: 480px;
+            object-fit: contain;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .data-section {
+            margin-top: 30px;
+            padding: 15px 0;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .data-item {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        strong {
+            color: #007BFF;
+        }
+    </style>
     </head>
     <body>
-        <div class="container text-center mt-5">
-            <h1 class="mb-4">Prusa MK3S Live</h1>
+    
+        <div class="container">
+            <h1>Prusa MK3S Live</h1>
+    
             <img src="/frame.jpg" class="camera-feed" alt="Live camera feed" />
-        
-            <div class="data-section mt-4">
-                <p class="fs-4 data-item" id="temperature">Temperature: <strong>Loading...</strong></p>
-                <p class="fs-4 data-item" id="humidity">Humidity: <strong>Loading...</strong></p>
-                <p class="fs-4 data-item" id="fps-stream">Stream FPS: <strong>Loading...</strong></p>
-                <p class="fs-4 data-item" id="fps-capture">Capture FPS: <strong>Loading...</strong></p>
+    
+            <div class="data-section">
+                <p class="data-item" id="temperature">Temperature: <strong>Loading...</strong></p>
+                <p class="data-item" id="humidity">Humidity: <strong>Loading...</strong></p>
+                <p class="data-item" id="fps-stream">🎥 Stream FPS: <strong>Loading...</strong></p>
+                <p class="data-item" id="fps-capture">📸 Capture FPS: <strong>Loading...</strong></p>
             </div>
         </div>
+    
     </body>
     
     <script>
