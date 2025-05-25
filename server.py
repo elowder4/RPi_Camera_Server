@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from picamera2 import Picamera2
 from picamera2 import Preview
 import RPi.GPIO as gpio
@@ -43,7 +43,7 @@ def generate_video():
 
 @app.route('/')
 def index():
-    return "Welcome to the Raspberry Pi Camera Stream! Visit /video_feed to watch the stream."
+    return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():

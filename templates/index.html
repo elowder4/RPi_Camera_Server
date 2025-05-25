@@ -1,5 +1,5 @@
 <html>
- <head>
+<head>
     <meta name = "viewport" content = "width = device-width, initial-scale=1">
     <style>
         img{ display: block;
@@ -8,8 +8,10 @@
         }
         h1 {text-align: center;}
     </style>
- </head>
- <body>
-    <img id="bg" src = "{{ url_for('video_feed') }}" style="width: 88%;">
- </body>
+    <title>Raspberry Pi Camera Stream</title>
+</head>
+<body>
+    <h1>Live Camera Feed</h1>
+    <img id="video" src="{{ url_for('video_feed') }}" width="640" height="480">
+</body>
 </html>
