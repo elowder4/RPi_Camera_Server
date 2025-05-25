@@ -42,7 +42,10 @@ def generate_video():
         else: 
             t0 = int(time() * 1000) # time in ms
             fps_time.append(t0)
-            fps = 1000 / fps_time
+            if (len(fps_time)) > 1:
+                fps = 1000 / (fps_time[1] - fps_time[0])
+            if len(fps_time) >= 2:
+                fps_time.pop(0)
             
         
         print(fps)
