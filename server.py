@@ -29,37 +29,6 @@ picam2.start()
 fps_times = []
 WINDOW_SIZE = 30  # number of frames to average over
 fps_capture = 0.0
-
-
-def generate_video():
-    global fps_capture
-    
-    while True:
-        start_time = time()
-
-        request = picam2.capture_request()
-        frame = request.make_array("main")
-        request.release()
-
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 75]
-        ret, jpeg_frame = cv2.imencode('.jpg', frame, encode_param)
-
-        if not ret:
-            continue
-
-        end_time = time()
-        frame_time = end_time - start_time
-
-        fps_times.append(frame_time)
-        if len(fps_times) > WINDOW_SIZE:
-            fps_times.pop(0)
-
-        if len(fps_times) > 1:
-            avg_time = sum(fps_times) / len(fps_times)
-            fps_capture = 1.0 / avg_time
-
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame.tobytes() + b'\r\n\r\n')
         
 
 @app.route('/')
@@ -76,6 +45,8 @@ def get_fps():
 
 @app.route('/frame.jpg')
 def frame():
+    global fps_capture
+    start_time = time()
     request = picam2.capture_request()
     frame = request.make_array("main")
     request.release()
@@ -84,6 +55,16 @@ def frame():
     ret, jpeg = cv2.imencode('.jpg', frame, encode_param)
     if not ret:
         abort(500)
+    end_time = time()
+    frame_time = end_time - start_time
+
+    fps_times.append(frame_time)
+    if len(fps_times) > WINDOW_SIZE:
+        fps_times.pop(0)
+
+    if len(fps_times) > 1:
+        avg_time = sum(fps_times) / len(fps_times)
+        fps_capture = 1.0 / avg_time
 
     return Response(jpeg.tobytes(), mimetype='image/jpeg')
 
