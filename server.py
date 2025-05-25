@@ -48,7 +48,8 @@ def generate_video():
                 fps_time.pop(0)
             
         
-        print(fps)
+        if (fps): 
+            print(fps)
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame.tobytes() + b'\r\n\r\n')
