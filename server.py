@@ -1,4 +1,4 @@
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, jsonify
 from picamera2 import Picamera2
 from picamera2 import Preview
 import RPi.GPIO as gpio
@@ -28,8 +28,11 @@ picam2.start()
 # Function to capture video frame by frame and generate the MJPEG stream
 fps_times = []
 WINDOW_SIZE = 30  # number of frames to average over
+fps_capture = 0.0
 
 def generate_video():
+    global fps_capture
+    
     while True:
         start_time = time()
 
@@ -52,8 +55,7 @@ def generate_video():
 
         if len(fps_times) > 1:
             avg_time = sum(fps_times) / len(fps_times)
-            fps = 1.0 / avg_time
-            print(f"FPS (avg): {fps:.2f}")
+            fps_capture = 1.0 / avg_time
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame.tobytes() + b'\r\n\r\n')
@@ -62,6 +64,10 @@ def generate_video():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/get_fps')
+def get_fps():
+    return jsonify(round(fps_capture, 2))
 
 @app.route('/video_feed')
 def video_feed():

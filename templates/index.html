@@ -1,17 +1,56 @@
 <html>
-<head>
-    <meta name = "viewport" content = "width = device-width, initial-scale=1">
-    <style>
-        img{ display: block;
-            margin-left: auto;
-            margin-right: auto;
+    <head>
+        <meta name = "viewport" content = "width = device-width, initial-scale=1">
+        <style>
+            img{ display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            h1 {text-align: center;}
+        </style>
+        <title>Prusa MK3S Stream</title>
+    </head>
+    
+    <body>
+        <h1>Prusa MK3S Live</h1>
+        <p>Capture FPS: <span id="fps-capture">Loading...</span></p>
+        <p>Stream FPS: <span id="fps-stream">Loading...</span></p>
+        <img id="video" src="{{ url_for('video_feed') }}" width="640" height="480">
+    </body>
+    
+    <script>
+        function updateFPS() {
+            fetch('/fps')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('fps-display').textContent = data.fps;
+                });
         }
-        h1 {text-align: center;}
-    </style>
-    <title>Raspberry Pi Camera Stream</title>
-</head>
-<body>
-    <h1>Live Camera Feed</h1>
-    <img id="video" src="{{ url_for('video_feed') }}" width="640" height="480">
-</body>
+        // Update every second
+        setInterval(updateFPS, 1000);
+        
+        const img = document.getElementById('video');
+        let lastTime = performance.now();
+        let frameCount = 0;
+        
+        img.onload = () => {
+          const now = performance.now();
+          const delta = now - lastTime;
+          lastTime = now;
+        
+          // Calculate FPS = 1000ms / delta time between frames
+          const fps = 1000 / delta;
+        
+          // Optional: smooth FPS by averaging over several frames
+          frameCount++;
+          if (!window.fpsSamples) window.fpsSamples = [];
+          window.fpsSamples.push(fps);
+          if (window.fpsSamples.length > 10) window.fpsSamples.shift();
+        
+          const avgFps = window.fpsSamples.reduce((a,b) => a+b, 0) / window.fpsSamples.length;
+        
+          document.getElementById('fps-stream').textContent = avgFps.toFixed(1);
+  };
+    
+    </script>
 </html>
