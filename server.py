@@ -3,7 +3,7 @@ from picamera2 import Picamera2
 from picamera2 import Preview
 import RPi.GPIO as gpio
 from time import time
-import threading
+import threading 
 import adafruit_dht
 import board
 import cv2
@@ -66,13 +66,16 @@ def get_DHT11():
         temperature_f = temperature_c * (9 / 5) + 32
 
         humidity = dhtDevice.humidity
+        
+        return jsonify([round(temperature_f, 2), round(humidity, 2)])
     
     except RuntimeError:
-        temperature_f = "Loading..."
-        humidity = "Loading..."
+        temperature_f = 0
+        humidity = 0
         
-    return jsonify({round(temperature_f, 2), round(humidity, 2)})
-
+        
+    return jsonify([round(temperature_f, 2), round(humidity, 2)])
+        
 
 @app.route('/get_fps')
 def get_fps():

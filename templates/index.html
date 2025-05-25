@@ -109,7 +109,7 @@
             fetch('/get_fps')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('fps-capture').textContent = data;
+                    document.getElementById('fps-capture').textContent = data.toFixed(1);
                     document.getElementById('fps-stream').textContent = avgFps.toFixed(1);
                 })
                 .catch(err => console.warn("Capture FPS fetch error:", err));
@@ -119,8 +119,8 @@
             fetch('/get_DHT11')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('temperature').textContent = data[0] + "°F";
-                    document.getElementById('humidity').textContent = data[1] + "%";
+                    document.getElementById('temperature').textContent = data[0].toFixed(1) + "°F";
+                    document.getElementById('humidity').textContent = data[1].toFixed(1) + "%";
                 })
                 .catch(err => console.warn("Capture DHT11 fetch error:", err));
         }
