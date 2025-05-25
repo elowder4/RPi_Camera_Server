@@ -1,4 +1,4 @@
-from flask import Flask, Response, render_template, jsonify
+from flask import Flask, Response, render_template, jsonify, abort
 from picamera2 import Picamera2
 from picamera2 import Preview
 import RPi.GPIO as gpio
@@ -29,6 +29,7 @@ picam2.start()
 fps_times = []
 WINDOW_SIZE = 30  # number of frames to average over
 fps_capture = 0.0
+
 
 def generate_video():
     global fps_capture
@@ -63,19 +64,29 @@ def generate_video():
 
 @app.route('/')
 def index():
+    # Turn on Light if needed 
+    gpio.output(26, gpio.HIGH)
     return render_template('index.html')
+
 
 @app.route('/get_fps')
 def get_fps():
     return jsonify(round(fps_capture, 2))
 
-@app.route('/video_feed')
-def video_feed():
-    # Turn on Light if needed 
-    gpio.output(26, gpio.HIGH)
-    # Return the video stream using the generator function
-    return Response(generate_video(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/frame.jpg')
+def frame():
+    request = picam2.capture_request()
+    frame = request.make_array("main")
+    request.release()
+
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 75]
+    ret, jpeg = cv2.imencode('.jpg', frame, encode_param)
+    if not ret:
+        abort(500)
+
+    return Response(jpeg.tobytes(), mimetype='image/jpeg')
+
 
 if __name__ == '__main__':
     app.run(host='192.168.1.96', port=5000, debug=False)
