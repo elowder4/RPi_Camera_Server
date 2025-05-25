@@ -20,12 +20,18 @@
     
     <script>
         function updateFPS() {
-            fetch('/get_fps')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('fps-capture').textContent = data.fps;
-                });
+        fetch('/get_fps')
+            .then(response => response.json())
+            .then(data => {
+                // data is a number here
+                document.getElementById('fps-capture').textContent = data.toFixed(2);
+            })
+            .catch(err => console.warn('FPS fetch error:', err));
         }
+        
+        // Call updateFPS every 1 second
+        setInterval(updateFPS, 1000);
+        updateFPS(); // initial call
         
         const img = document.getElementById('video');
         let lastTime = performance.now();
