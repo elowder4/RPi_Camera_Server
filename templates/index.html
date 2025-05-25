@@ -61,10 +61,10 @@
             <canvas id="videoCanvas" class="camera-feed" alt="Live camera feed"></canvas>
     
             <div class="data-section">
-                <p class="data-item" id="temperature">Temperature: <strong>Loading...</strong></p>
-                <p class="data-item" id="humidity">Humidity: <strong>Loading...</strong></p>
-                <p class="data-item" id="fps-stream">🎥 Stream FPS: <strong>Loading...</strong></p>
-                <p class="data-item" id="fps-capture">📸 Capture FPS: <strong>Loading...</strong></p>
+                <p class="data-item">Temperature: <strong id="temperature">Loading...</strong></p>
+                <p class="data-item">Humidity: <strong id="humidity">Loading...</strong></p>
+                <p class="data-item">Stream FPS: <strong id="fps-stream">Loading...</strong></p>
+                <p class="data-item">Capture FPS: <strong id="fps-capture">Loading...</strong></p>
             </div>
         </div>
     
@@ -76,6 +76,7 @@
 
         let lastFrameTime = performance.now();
         let fpsSamples = [];
+        let avgFps = 0;
 
         function fetchAndDrawFrame() {
             const img = new Image();
@@ -90,7 +91,7 @@
                 fpsSamples.push(fps);
                 if (fpsSamples.length > 10) fpsSamples.shift();
 
-                var avgFps = fpsSamples.reduce((a, b) => a + b, 0) / fpsSamples.length;
+                avgFps = fpsSamples.reduce((a, b) => a + b, 0) / fpsSamples.length;
 
                 // Fetch next frame
                 requestAnimationFrame(fetchAndDrawFrame);
