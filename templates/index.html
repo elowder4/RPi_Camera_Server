@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-    <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Prusa MK3S Live</title>
@@ -60,7 +58,7 @@
         <div class="container">
             <h1>Prusa MK3S Live</h1>
     
-            <img src="/frame.jpg" class="camera-feed" alt="Live camera feed" />
+            <canvas id="videoCanvas" class="camera-feed" alt="Live camera feed"></canvas>
     
             <div class="data-section">
                 <p class="data-item" id="temperature">Temperature: <strong>Loading...</strong></p>
@@ -129,7 +127,9 @@
 
         setInterval(updateFPS, 500);
         setInterval(updateDHT11, 500);
-        updateCaptureFPS(); // Initial call
+        // Init calls
+        updateFPS(); 
+        updateDHT11(); 
         fetchAndDrawFrame(); // Start video loop
     </script>
 </html>
