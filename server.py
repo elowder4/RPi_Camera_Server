@@ -11,7 +11,7 @@ app = Flask(__name__)
 picam2 = Picamera2()
 
 # Configure the camera for video capture
-config = picam2.create_video_configuration()
+config = picam2.create_video_configuration(main={"size": (640, 480), "format": "RGB888"}, controls={"FrameDurationLimits": (33333, 33333)})
 picam2.configure(config)
 
 # Start the camera preview
@@ -23,6 +23,7 @@ picam2.start()
 # Function to capture video frame by frame and generate the MJPEG stream
 def generate_video():
     while True:
+        '''
         # Capture a frame from the camera
         frame = picam2.capture_array()
 
@@ -37,7 +38,20 @@ def generate_video():
 
         # Yield the JPEG frame as part of the MJPEG stream
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame_bytes + b'\r\n\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame_bytes + b'\r\n\r\n')'''
+        
+        request = picam2.capture_request()
+        frame = request.make_array("main")  # fastest way to get image
+        request.release()
+
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 75]  # Lower quality = faster
+        ret, jpeg_frame = cv2.imencode('.jpg', frame, encode_param)
+        
+        if not ret:
+            continue
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame.tobytes() + b'\r\n\r\n')
 
 @app.route('/')
 def index():
