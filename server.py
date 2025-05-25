@@ -69,5 +69,9 @@ def frame():
     return Response(jpeg.tobytes(), mimetype='image/jpeg')
 
 
+'''
 if __name__ == '__main__':
     app.run(host='192.168.1.96', port=5000, debug=False)
+    '''
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)  # WSGI server
