@@ -25,31 +25,39 @@ picam2.start_preview(Preview.NULL)  # No physical preview needed
 # Start the camera (you must start it before capturing frames)
 picam2.start()
 
-fps_time = []
-
 # Function to capture video frame by frame and generate the MJPEG stream
+fps_times = []
+WINDOW_SIZE = 30  # number of frames to average over
+
 def generate_video():
     while True:
+        start_time = time()
+
         request = picam2.capture_request()
-        frame = request.make_array("main")  # fastest way to get image
+        frame = request.make_array("main")
         request.release()
 
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 75]  # Lower quality = faster
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 75]
         ret, jpeg_frame = cv2.imencode('.jpg', frame, encode_param)
-        
+
         if not ret:
             continue
-        else: 
-            t0 = int(time() * 1000) # time in ms
-            fps_time.append(t0)
-            if (len(fps_time)) > 1:
-                fps = 1000 / (fps_time[1] - fps_time[0])
-                print(fps)
-            if len(fps_time) >= 2:
-                fps_time.pop(0)
+
+        end_time = time()
+        frame_time = end_time - start_time
+
+        fps_times.append(frame_time)
+        if len(fps_times) > WINDOW_SIZE:
+            fps_times.pop(0)
+
+        if len(fps_times) > 1:
+            avg_time = sum(fps_times) / len(fps_times)
+            fps = 1.0 / avg_time
+            print(f"FPS (avg): {fps:.2f}")
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpeg_frame.tobytes() + b'\r\n\r\n')
+        
 
 @app.route('/')
 def index():
