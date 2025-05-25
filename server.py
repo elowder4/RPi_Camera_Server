@@ -40,7 +40,7 @@ def generate_video():
         if not ret:
             continue
         else: 
-            t0 = milliseconds = int(time() * 1000) # time in ms
+            t0 = int(time() * 1000) # time in ms
             fps_time.append(t0)
             fps = 1000 / fps_time
             
