@@ -20,36 +20,34 @@
     
     <script>
         function updateFPS() {
-            fetch('/fps')
+            fetch('/get_fps')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('fps-display').textContent = data.fps;
+                    document.getElementById('fps-capture').textContent = data.fps;
                 });
         }
-        // Update every second
-        setInterval(updateFPS, 1000);
         
         const img = document.getElementById('video');
         let lastTime = performance.now();
-        let frameCount = 0;
-        
+        let fpsSamples = [];
+    
         img.onload = () => {
-          const now = performance.now();
-          const delta = now - lastTime;
-          lastTime = now;
-        
-          // Calculate FPS = 1000ms / delta time between frames
-          const fps = 1000 / delta;
-        
-          // Optional: smooth FPS by averaging over several frames
-          frameCount++;
-          if (!window.fpsSamples) window.fpsSamples = [];
-          window.fpsSamples.push(fps);
-          if (window.fpsSamples.length > 10) window.fpsSamples.shift();
-        
-          const avgFps = window.fpsSamples.reduce((a,b) => a+b, 0) / window.fpsSamples.length;
-        
-          document.getElementById('fps-stream').textContent = avgFps.toFixed(1);
+            const now = performance.now();
+            const delta = now - lastTime;
+            lastTime = now;
+    
+            const fps = 1000 / delta;
+    
+            fpsSamples.push(fps);
+            if (fpsSamples.length > 10) fpsSamples.shift();
+    
+            const avgFps = fpsSamples.reduce((a,b) => a+b, 0) / fpsSamples.length;
+            document.getElementById('fps-stream').textContent = avgFps.toFixed(1);
+        };
+    
+        img.onerror = () => {
+            console.warn("Image load error");
+        };
   };
     
     </script>
