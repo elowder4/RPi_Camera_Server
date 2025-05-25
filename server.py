@@ -2,7 +2,7 @@ from flask import Flask, Response, render_template
 from picamera2 import Picamera2
 from picamera2 import Preview
 import RPi.GPIO as gpio
-import time
+from time import time
 import cv2
 import numpy as np
 
