@@ -37,27 +37,7 @@ fps_times = []
 window_size = 30  # Number of frames to average over
 fps_capture = 0.0
 
-# Light timer variables
-light_start = time()
-light_timeout = 20 # Time in s to keep light on after toggle
-toggled = False
         
-
-def monitor_light_timeout():
-    global toggled
-    global light_start
-    
-    while True:
-        if ((time() - light_start) > light_timeout) and toggled:
-            gpio.output(light_pin, gpio.LOW)
-            toggled = False
-            
-        
-def start_timeout_thread(): 
-    threading.Thread(target=monitor_light_timeout, daemon=True).start() # Thread to monitor server traffic
-
-        
-
 @app.route('/')
 def index():
     gpio.output(light_pin, gpio.HIGH) # Turn on light on access to server
@@ -75,10 +55,6 @@ def toggle_light():
         gpio.output(light_pin, gpio.LOW) # Turn off
     else:
         gpio.output(light_pin, gpio.HIGH) # Turn on 
-        global toggled
-        toggled = True
-        global light_start
-        light_start = time()
     
     return ('', 204)  # No content, minimal response
 
