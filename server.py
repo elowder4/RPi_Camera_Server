@@ -39,7 +39,7 @@ fps_capture = 0.0
 
 # Light timer variables
 light_start = 0.0
-light_timeout = 20 # Time in seconds to keep light on after toggle
+light_timeout = 20E6 # Time in us to keep light on after toggle
 toggled = False
         
 
