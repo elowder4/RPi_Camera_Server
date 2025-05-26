@@ -38,8 +38,8 @@ window_size = 30  # Number of frames to average over
 fps_capture = 0.0
 
 # Light timer variables
-light_start = 0.0
-light_timeout = 20E6 # Time in us to keep light on after toggle
+light_start = time()
+light_timeout = 20 # Time in s to keep light on after toggle
 toggled = False
         
 
@@ -60,9 +60,6 @@ def index():
     gpio.output(light_pin, gpio.HIGH) # Turn on light on access to server
     global toggled
     toggled = True
-    
-    global light_start
-    light_start = time()
     
     return render_template('index.html')
 
