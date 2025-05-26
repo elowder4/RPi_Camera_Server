@@ -31,7 +31,7 @@ picam2.set_controls({
     "Contrast": 1.8,        # Try values between 1.0 to 2.0
     # Optional enhancements:
     # "Saturation": 1.2,
-    "Brightness": 0.3
+    "Brightness": 0.6
     # "Sharpness": 1.0
 })
 
