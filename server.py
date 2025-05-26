@@ -44,10 +44,11 @@ toggled = False
         
 
 def monitor_light_timeout():
+    global toggled
+    
     while True:
         if ((time() - light_start) > light_timeout) and toggled:
             gpio.output(light_pin, gpio.LOW)
-            global toggled
             toggled = False
             
         time_sleep_interval = 1
@@ -64,6 +65,7 @@ def index():
     light_start = time()
     
     return render_template('index.html')
+
 
 @app.route('/toggle_light', METHODS=['POST'])
 def toggle_light():
