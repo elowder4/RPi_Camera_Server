@@ -45,6 +45,7 @@ toggled = False
 
 def monitor_light_timeout():
     global toggled
+    global light_start
     
     while True:
         if ((time() - light_start) > light_timeout) and toggled:
