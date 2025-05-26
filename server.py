@@ -52,8 +52,6 @@ def monitor_light_timeout():
             gpio.output(light_pin, gpio.LOW)
             toggled = False
             
-        time_sleep_interval = 1
-        time.sleep(time_sleep_interval)
         
 def start_timeout_thread(): 
     threading.Thread(target=monitor_light_timeout, daemon=True).start() # Thread to monitor server traffic
