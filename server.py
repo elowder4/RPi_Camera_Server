@@ -26,6 +26,15 @@ picam2 = Picamera2()
 config = picam2.create_video_configuration(main={"size": (640, 480), "format": "RGB888"}, controls={"FrameDurationLimits": (33333, 33333)})
 picam2.configure(config)
 
+# Set contrast and other enhancements
+picam2.set_controls({
+    "Contrast": 1.5,        # Try values between 1.0 to 2.0
+    # Optional enhancements:
+    # "Saturation": 1.2,
+    # "Brightness": 0.1,
+    # "Sharpness": 1.0
+})
+
 # Start the camera preview
 picam2.start_preview(Preview.NULL)  # No physical preview needed
 
