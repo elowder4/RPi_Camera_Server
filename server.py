@@ -48,15 +48,16 @@ def monitor_light_timeout():
     global light_start
     
     while True:
-        print("Time: ", time(), flush=True)
-        print("Start Time: ", light_start, flush=True)
-        print("Toggled: ", toggled, flush=True)
         if ((time() - light_start) > light_timeout) and toggled:
             gpio.output(light_pin, gpio.LOW)
             toggled = False
             
         time_sleep_interval = 1
         time.sleep(time_sleep_interval)
+        
+def start_timeout_thread(): 
+    threading.Thread(target=monitor_light_timeout, daemon=True).start() # Thread to monitor server traffic
+
         
 
 @app.route('/')
@@ -143,5 +144,4 @@ if __name__ == '__main__':
 '''
 
 if __name__ == '__main__':
-    threading.Thread(target=monitor_light_timeout, daemon=True).start() # Thread to monitor server traffic
     app.run(host='0.0.0.0', port=5000, debug=False)  # WSGI server
