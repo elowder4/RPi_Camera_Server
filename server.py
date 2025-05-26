@@ -77,6 +77,8 @@ def toggle_light():
         gpio.output(light_pin, gpio.HIGH) # Turn on 
         global toggled
         toggled = True
+        global light_start
+        light_start = time()
     
     return ('', 204)  # No content, minimal response
 
