@@ -3,7 +3,6 @@ from picamera2 import Picamera2
 from picamera2 import Preview
 import RPi.GPIO as gpio
 from time import time
-import threading 
 import adafruit_dht
 import board
 import cv2
