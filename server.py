@@ -38,14 +38,17 @@ window_size = 30  # Number of frames to average over
 fps_capture = 0.0
 
 # Light timer variables
-end_time = 0.0
-light_timeout = 10 # Time in seconds to keep light on after server shuts off
+light_start = 0.0
+light_timeout = 20 # Time in seconds to keep light on after toggle
+toggled = False
         
 
 def monitor_light_timeout():
     while True:
-        if (time() - end_time) > light_timeout:
+        if ((time() - light_start) > light_timeout) and toggled:
             gpio.output(light_pin, gpio.LOW)
+            global toggled
+            toggled = False
             
         time_sleep_interval = 1
         time.sleep(time_sleep_interval)
@@ -53,10 +56,27 @@ def monitor_light_timeout():
 
 @app.route('/')
 def index():
-    # Turn on Light if needed 
-    gpio.output(light_pin, gpio.HIGH)
+    gpio.output(light_pin, gpio.HIGH) # Turn on light on access to server
+    global toggled
+    toggled = True
+    
+    global light_start
+    light_start = time()
     
     return render_template('index.html')
+
+@app.route('/toggle_light', METHODS=['POST'])
+def toggle_light():
+    light_state = gpio.input(light_pin)
+    
+    if light_state:
+        gpio.output(light_pin, gpio.LOW) # Turn off
+    else:
+        gpio.output(light_pin, gpio.HIGH) # Turn on 
+        global toggled
+        toggled = True
+    
+    return ('', 204)  # No content, minimal response
 
 
 @app.route('/get_DHT11')
