@@ -48,6 +48,9 @@ def monitor_light_timeout():
     global light_start
     
     while True:
+        print("Time: ", time())
+        print("Start Time: ", light_start)
+        print("Toggled: ", toggled)
         if ((time() - light_start) > light_timeout) and toggled:
             gpio.output(light_pin, gpio.LOW)
             toggled = False
