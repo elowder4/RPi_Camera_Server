@@ -28,10 +28,10 @@ picam2.configure(config)
 
 # Set contrast and other enhancements
 picam2.set_controls({
-    "Contrast": 1.5,        # Try values between 1.0 to 2.0
+    "Contrast": 1.8,        # Try values between 1.0 to 2.0
     # Optional enhancements:
     # "Saturation": 1.2,
-    # "Brightness": 0.1,
+    "Brightness": 0.3
     # "Sharpness": 1.0
 })
 
