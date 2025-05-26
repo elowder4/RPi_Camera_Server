@@ -67,7 +67,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/toggle_light', METHODS=['POST'])
+@app.route('/toggle_light', methods=['POST'])
 def toggle_light():
     light_state = gpio.input(light_pin)
     
